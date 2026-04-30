@@ -13,16 +13,10 @@ users_blueprint = Blueprint('users', __name__)
 @users_blueprint.route('/create', methods=['POST'])
 def create_user(*args, **kwargs):
     """Create a new user account"""
-    _request_args = {}
+    _request_args = request.args
 
-
-    if request.args:
-        _request_args = request.args
-    else:
+    if not _request_args:
         return make_response(jsonify({'error': 'No data provided'}), 400)
-
-    if _request_args is None:
-        return make_response(jsonify({'error': 'Invalid request data'}), 400)
 
     # Verify required fields exist
     required_fields = ['password', 'dob_year', 'dob_month', 'dob_day', 'name', 'email']
@@ -297,7 +291,7 @@ def update(*args, **kwargs):
     if not request.is_json:
         return make_response(jsonify({'error': 'JSON data required'}), 400)
 
-    update_data = request.args
+    update_data = request.get_json()
     allowed_fields = ['name', 'email']
 
     updates = {}
