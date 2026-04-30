@@ -1,9 +1,10 @@
 import io
 from bson import ObjectId
-from flask import request, make_response, jsonify, Blueprint, send_file
+from flask import request, jsonify, Blueprint, send_file
 import utilities.verify as verify
 import utilities.auth as auth
 from PIL import Image
+import math
 
 shops_blueprint = Blueprint('shops', __name__)
 
@@ -117,7 +118,7 @@ def get_shops(*args, **kwargs):
     offset = (page - 1) * per_page
 
     # Filters
-    filters = {"deleted": False}
+    filters : dict = {"deleted": False}
 
     # Add filter for category
     category = request.args.get('category')
@@ -306,11 +307,14 @@ def get_shops(*args, **kwargs):
         if not use_geolocation and "distance" in shop:
             del shop["distance"]
 
+    total_pages = math.ceil(filtered_shop_count / per_page)
+
     return jsonify({
         "shops": shops,
         "total": filtered_shop_count,
         "page": page,
-        "per_page": per_page
+        "per_page": per_page,
+        "total_pages": total_pages
     }), 200
 
 
@@ -643,7 +647,7 @@ def reactivate_shop(shop_id: str, *args, **kwargs):
     if not shop.get("deleted", False):
         return jsonify({"error": "Shop is not currently deactivated"}), 400
 
-    changed_values = {"deleted": False}
+    changed_values : dict = {"deleted": False}
 
     if new_owner_id is not None:
         # Verify new owner exists

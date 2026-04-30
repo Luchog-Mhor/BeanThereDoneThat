@@ -4,8 +4,10 @@ from blueprints.shops.reviews import reviews_blueprint
 from blueprints.shops.shops import shops_blueprint
 from blueprints.users.users import users_blueprint
 from utilities.auth import is_user
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 api_prefix = "/api/1.0"
 app.register_blueprint(users_blueprint, url_prefix=f'{api_prefix}/users')
