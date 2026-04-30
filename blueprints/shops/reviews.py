@@ -205,22 +205,6 @@ def get_reviews():
                 del r['review']['photo']
 
 
-    reviews = list(shops_collection.aggregate(pipeline))
-
-    # Convert ObjectIds to strings for JSON serialization
-    for r in reviews:
-        if 'review' in r:
-            if 'user_id' in r['review']:
-                r['review']['user_id'] = str(r['review']['user_id'])
-            if 'date_created' in r['review']:
-                 r['review']['date_created'] = r['review']['date_created'].isoformat()
-            if 'date_edited' in r['review']:
-                r['review']['date_edited'] = r['review']['date_edited'].isoformat()
-            if 'edits' in r['review']:
-                for edit in r['review']['edits']:
-                    if 'date' in edit:
-                        edit['date'] = edit['date'].isoformat()
-
     return jsonify({
         "reviews": [r['review'] for r in reviews],
         "page": page,
